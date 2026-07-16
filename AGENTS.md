@@ -18,8 +18,10 @@ to match the `name:` frontmatter.
 - SKILL.md must stay portable: no Claude-only syntax in the body
   (no `$ARGUMENTS`, no `!`cmd`` injection, no `${CLAUDE_SKILL_DIR}`), body under
   500 lines, `name` = directory name, description ≤1024 chars with trigger
-  keywords front-loaded. Codex reads only `name`/`description` from frontmatter;
-  OpenCode ignores unknown fields.
+  keywords front-loaded. Keep extension fields such as `version` nested under
+  `metadata`; Codex's validator rejects a top-level `version`, while Amplifier
+  does not require one. Codex reads only `name`/`description` for skill
+  triggering; OpenCode ignores unknown fields.
 - Heavy content goes in `references/` (progressive disclosure), never SKILL.md.
 - `scripts/install.sh` must stay idempotent (`ln -sfn`) and safe to re-run.
 

@@ -301,6 +301,9 @@ Run either tool with `--help` for current options.
 - Tagged fleets provide bounded cleanup; leave them open only when dashboard
   evidence is part of the request.
 - The skill body contains no harness-specific prompt interpolation syntax.
+- Frontmatter uses the shared portable subset; optional version information is
+  nested under `metadata` so Codex, Claude Code, and Amplifier accept the same
+  `SKILL.md`.
 
 ## Repository layout
 

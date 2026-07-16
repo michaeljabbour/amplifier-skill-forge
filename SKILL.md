@@ -12,9 +12,9 @@ description: >-
   supervising attractor / evaluation / resolve / superpowers jobs via their
   file ledgers).
 license: MIT
-version: "1.1"
 metadata:
   author: michaeljabbour
+  version: "1.1"
   short-description: Terminal & agent-CLI orchestration via forge
 ---
 
