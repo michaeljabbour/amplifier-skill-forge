@@ -166,7 +166,8 @@ def _finish_command(out):
 
 def doctor():
     forge = _require_executable(
-        "forge", "Install it with `bun install -g forge-terminal-mcp` or `npm i -g forge-terminal-mcp`."
+        "forge", "Install it with `bun install -g forge-terminal-mcp`, `npm i -g forge-terminal-mcp`, "
+        "or `curl -fsSL https://forgemcp.dev/install.sh | sh` (no Node.js needed)."
     )
     status_result = subprocess.run([forge, "status"], capture_output=True, text=True)
     status = status_result.stdout + status_result.stderr

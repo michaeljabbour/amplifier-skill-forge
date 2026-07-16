@@ -2,8 +2,9 @@
 
 Give Claude Code, OpenAI Codex, OpenCode, Gemini, and Microsoft Amplifier a
 shared way to launch, drive, coordinate, and test terminal applications in
-persistent [Forge](https://www.npmjs.com/package/forge-terminal-mcp) PTY
-sessions.
+persistent [Forge](https://github.com/ferodrigop/forge) PTY sessions
+([forgemcp.dev](https://forgemcp.dev),
+[npm](https://www.npmjs.com/package/forge-terminal-mcp)).
 
 This repository is both a portable [Agent Skill](https://agentskills.io) and a
 zero-dependency Python toolkit. Sessions remain visible in the Forge dashboard
@@ -44,8 +45,18 @@ can resume from the same state file.
 ## Requirements
 
 - Python 3.9 or later; no Python packages are required.
-- Forge: `bun install -g forge-terminal-mcp` or
-  `npm install -g forge-terminal-mcp`.
+- [Forge](https://github.com/ferodrigop/forge) — install one of:
+
+  ```bash
+  bun install -g forge-terminal-mcp                  # bun (recommended)
+  npm install -g forge-terminal-mcp                  # npm (Node.js >= 18)
+  curl -fsSL https://forgemcp.dev/install.sh | sh    # standalone binary (no Node.js)
+  ```
+
+  No daemon setup is needed: `python3 tools/forge.py doctor` starts the daemon
+  if it is not already running (`forge start -d`). Add
+  `forge start -d --dashboard --port 3141` yourself if you want the web
+  dashboard at [http://127.0.0.1:3141/](http://127.0.0.1:3141/).
 - Any harnesses you want to drive: `claude`, `codex`, `gemini`, `opencode`, or
   `amplifier`.
 - Git for artifact-gated relays and worktree isolation.
