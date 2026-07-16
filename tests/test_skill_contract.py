@@ -54,6 +54,19 @@ class SkillContractTests(unittest.TestCase):
         self.assertNotIn("version", top_level_fields)
         self.assertTrue(any(line.startswith("  version:") for line in lines))
 
+    def test_frontmatter_top_level_keys_match_codex_allowlist(self):
+        # Mirrors Codex's skill validator (codex-rs skill-creator
+        # quick_validate.py): any other top-level key is rejected there,
+        # so extension fields must stay nested under `metadata`.
+        allowed = {"name", "description", "license", "allowed-tools", "metadata"}
+        lines, _ = frontmatter_and_body()
+        top_level_fields = {
+            line.split(":", 1)[0]
+            for line in lines
+            if line and not line[0].isspace() and ":" in line
+        }
+        self.assertLessEqual(top_level_fields, allowed)
+
     def test_skill_body_is_portable_and_under_500_lines(self):
         _, body = frontmatter_and_body()
         self.assertLess(len(body.splitlines()), 500)

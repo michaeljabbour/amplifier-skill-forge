@@ -1,5 +1,8 @@
 # amplifier-skill-forge
 
+[![CI](https://github.com/michaeljabbour/amplifier-skill-forge/actions/workflows/ci.yml/badge.svg)](https://github.com/michaeljabbour/amplifier-skill-forge/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 Give Claude Code, OpenAI Codex, OpenCode, Gemini, and Microsoft Amplifier a
 shared way to launch, drive, coordinate, and test terminal applications in
 persistent [Forge](https://github.com/ferodrigop/forge) PTY sessions
