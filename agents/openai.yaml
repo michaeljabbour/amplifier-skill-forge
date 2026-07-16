@@ -1,7 +1,4 @@
-# Codex-only skill metadata (ignored by Claude Code and OpenCode)
 interface:
-  display_name: Forge Terminal Orchestration
-  short_description: Spin up, fan out, drive, and test terminal apps and coding agents
-  default_prompt: Use the amplifier-skill-forge skill to launch and drive the app in a forge terminal session.
-policy:
-  allow_implicit_invocation: true
+  display_name: "Forge Terminal Orchestration"
+  short_description: "Coordinate and test terminal agents with Forge"
+  default_prompt: "Use $amplifier-skill-forge to coordinate a multi-harness task through persistent Forge sessions and artifact-gated handoffs."

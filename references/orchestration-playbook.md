@@ -3,6 +3,15 @@
 Deep-dive for orchestrating terminal apps (Amplifier or any TUI/CLI) in persistent
 forge sessions, plus the complete map of the Amplifier ecosystem. Read SKILL.md first; this file is the methodology.
 
+## Contents
+
+1. [Forge orchestration](#part-1--forge-orchestration-spin-up--fan-out--test)
+2. [Driving Amplifier](#part-2--driving-amplifier-under-forge)
+3. [Amplifier knowledge map](#part-3--amplifier-knowledge-map-what-lives-where)
+
+For planner → implementer → reviewer → resolver → acceptor coordination, read
+[multi-agent-relay.md](multi-agent-relay.md).
+
 ## Part 1 — Forge orchestration (spin up, fan out, test)
 
 ### The tool
@@ -13,36 +22,36 @@ turns and sessions — the terminal keeps running when you're not looking at it.
 
 ```bash
 FORGE=<skill-dir>/tools/forge.py   # resolve <skill-dir> = folder containing SKILL.md
-python3 $FORGE doctor        # ALWAYS run first — heals the daemon (see Failure modes)
+python3 "$FORGE" doctor      # before the first Forge operation — heals/starts daemon
 ```
 
 ### Core loop: spawn → drive → observe → assert → teardown
 
 ```bash
 # 1. Spawn (returns session id). Wait ~2s for shell init before first command.
-SID=$(python3 $FORGE new --name my-app --cwd /path/to/repo --tag mytest)
+SID=$(python3 "$FORGE" new --name my-app --cwd /path/to/repo --tag mytest)
 sleep 2
 
 # 2. Drive — type + submit, capture cleaned output
-python3 $FORGE run $SID "npm run dev" --wait 5
+python3 "$FORGE" run "$SID" "npm run dev" --wait 5
 
 # 3. Observe — two views, know the difference:
-python3 $FORGE screen $SID          # rendered viewport (what a human sees NOW) — for TUIs
-python3 $FORGE read $SID            # incremental output since last read — for logs/streams
+python3 "$FORGE" screen "$SID"     # rendered viewport (what a human sees NOW) — for TUIs
+python3 "$FORGE" read "$SID"       # incremental output since last read — for logs/streams
 
 # 4. Synchronize — never poll with sleeps when you can wait on a pattern:
-python3 $FORGE wait $SID "Ready in \d+ms" --timeout 60000   # exit 1 on timeout
+python3 "$FORGE" wait "$SID" "Ready in \d+ms" --timeout 29000 # loop for longer waits
 
 # 5. Assert — search the whole scrollback:
-python3 $FORGE grep $SID "error|Error" --max 20
+python3 "$FORGE" grep "$SID" "error|Error" --max 20
 
 # 6. Teardown
-python3 $FORGE close $SID           # or: close-tag mytest (kills the whole fleet)
+python3 "$FORGE" close "$SID"      # or: close-tag mytest (kills the whole fleet)
 ```
 
 For non-interactive commands (build/test/install) don't hold a session open:
 ```bash
-python3 $FORGE exec "cd /repo && pytest -x -q" --timeout 300000   # exits with command's code
+python3 "$FORGE" exec "pytest -x -q" --cwd /repo --timeout 300000 # command exit code
 ```
 
 ### Interactive input rules

@@ -15,7 +15,7 @@ git diff | codex exec "review this diff"          # piped stdin appended as a <s
 codex exec --json "task"                          # JSONL events to stdout
 codex exec -o /tmp/last.txt "task"                # write final agent message to file (also printed)
 codex exec --output-schema schema.json "task"     # force final message to conform to a JSON Schema
-codex exec -m gpt-5.1-codex "task"                # model selection (also -c model="...")
+codex exec -m MODEL_ID "task"                     # model selection (also -c model="...")
 codex exec -C /path/to/repo "task"                # working root (agent cwd)
 codex exec --add-dir /other/writable "task"       # extra writable roots
 codex exec -s workspace-write "task"              # sandbox: read-only (default) | workspace-write | danger-full-access
@@ -26,6 +26,17 @@ codex exec --ignore-user-config --ignore-rules    # skip ~/.codex/config.toml an
 codex exec -c key=value -p <profile> "task"       # config override / profile ($CODEX_HOME/<name>.config.toml layered on base)
 CODEX_API_KEY=sk-... codex exec --json "task"     # per-invocation API-key auth (automation)
 ```
+
+When launching interactive Codex through Forge, pass the sandbox to Codex
+directly. Forge 0.9.0's native interactive wrapper has been observed launching
+in `YOLO mode`, and its wrapper API does not expose a sandbox field:
+
+```bash
+python3 "$FORGE" new --cwd /repo --program "$(command -v codex)" \
+  --arg=--sandbox --arg=workspace-write --tag agents
+```
+
+`tools/relay.py start --harness codex` enforces this by requiring `--sandbox`.
 
 Key facts:
 - **Approvals in exec**: `codex exec` has no interactive approval UI; it runs with `--ask-for-approval never` semantics. Commands blocked by the sandbox just fail back to the model. `-a/--ask-for-approval` (`untrusted|on-request|never`) is a flag of the **interactive** `codex` command, not of `exec`.
@@ -176,4 +187,4 @@ Slash commands: `/connect` (add provider keys), `/compact`, `/details`, `/editor
 - **Sending keys**: submit = `\r` (not `\n` — `\n` is Ctrl+J = newline in both TUIs, a convenient asymmetry: use `\n` for multiline, `\r` to send). Esc = `\x1b` (send alone; beware Esc being interpreted as an escape-sequence prefix — add a small delay after it).
 - **Prefer structured channels**: for fire-and-forget work, `codex exec --json` and `opencode run --format json` (or better, `opencode serve` HTTP) eliminate all screen-scraping fragility; reserve PTY driving for flows that genuinely need the TUI (approval UX testing, steering mid-turn, backtracking).
 
-Sources: local `--help`/binary-string extraction on this machine; [Codex CLI docs](https://learn.chatgpt.com/docs/codex/cli); [Codex non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode); [github.com/openai/codex](https://github.com/openai/codex); [Codex TUI shortcuts reference](https://codex.danielvaughan.com/2026/04/08/codex-cli-tui-shortcuts-slash-commands/); [Linuru Codex keybindings](https://linuru.com/codex-cli/); [opencode CLI docs](https://opencode.ai/docs/cli/); [opencode keybinds](https://opencode.ai/docs/keybinds/); [opencode server](https://opencode.ai/docs/server/); [opencode TUI](https://opencode.ai/docs/tui/); [opencode JSON-stream issue](https://github.com/sst/opencode/issues/2449).
+Sources: local `--help`/binary-string extraction on this machine; [official Codex CLI docs](https://learn.chatgpt.com/docs/codex/cli); [official Codex non-interactive mode](https://learn.chatgpt.com/docs/non-interactive-mode); [openai/codex](https://github.com/openai/codex); [opencode CLI docs](https://opencode.ai/docs/cli/); [opencode keybinds](https://opencode.ai/docs/keybinds/); [opencode server](https://opencode.ai/docs/server/); [opencode TUI](https://opencode.ai/docs/tui/); [opencode JSON-stream issue](https://github.com/sst/opencode/issues/2449).
