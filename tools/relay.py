@@ -252,11 +252,16 @@ def _prior_roles_passed(state, role):
 
 
 def _marker_instruction(marker):
+    # Spell the token out character-group by character-group: agents reliably
+    # reassemble "REVIEWER, then an underscore, then DONE", but a bare
+    # "concatenation of REVIEWER _ DONE with no spaces" gets the underscore
+    # dropped often enough to stall the marker gate.
     tokens = marker.split("_")
-    spaced = " _ ".join(tokens)
+    spelled = ", then an underscore, then ".join(tokens)
     return (
-        f"After the artifact is complete and checks pass, reply with the concatenation of "
-        f"{spaced}, with no spaces. Do not write that concatenated token in any file."
+        f"After the artifact is complete and checks pass, reply with a single token "
+        f"formed by joining: {spelled} — one word, keep the underscore(s), no spaces. "
+        f"Do not write that token in any file."
     )
 
 
@@ -482,7 +487,12 @@ def command_start(args, path, state):
     elif args.sandbox:
         raise RelayError("--sandbox is supported only for Codex sessions")
     elif args.harness in ("claude", "gemini"):
-        completed = _run_forge([f"spawn-{args.harness}", *common], timeout=90)
+        # forge's native spawn_claude/spawn_gemini require an immediate prompt;
+        # the relay sends its prompt later via `send`, so start a plain PTY.
+        completed = _run_forge(
+            ["new", *common, "--program", resolved],
+            timeout=90,
+        )
     else:
         completed = _run_forge(
             ["new", *common, "--program", resolved],
