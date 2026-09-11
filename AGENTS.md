@@ -23,7 +23,9 @@ to match the `name:` frontmatter.
   does not require one. Codex reads only `name`/`description` for skill
   triggering; OpenCode ignores unknown fields.
 - Heavy content goes in `references/` (progressive disclosure), never SKILL.md.
-- `scripts/install.sh` must stay idempotent (`ln -sfn`) and safe to re-run.
+- `scripts/install.sh` must stay idempotent and safe to re-run. Use `ln -sfn`
+  for harness locations that support external links; install real copies in
+  `.agents/skills` and `.amplifier/skills`, which Amplifier boundary-checks.
 
 ## Known pitfalls (learned the hard way)
 

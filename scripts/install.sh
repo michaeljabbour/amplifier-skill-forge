@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Register amplifier-skill-forge into supported agent harnesses via symlinks.
+# Register amplifier-skill-forge with links or boundary-safe copies.
 # Idempotent — safe to re-run. Use --check for a dry run.
 set -euo pipefail
 
@@ -47,19 +47,14 @@ link() {
 # Claude Code personal skills (also discovered globally by OpenCode)
 link "$HOME/.claude/skills" "Claude Code + OpenCode"
 
-# Codex: current cross-vendor path
-link "$HOME/.agents/skills" "Codex (cross-vendor path)"
-
-# Amplifier personal skills (tool-skills default discovery path).
-# Amplifier's discovery enforces a symlink boundary: links under
-# ~/.amplifier/skills that resolve outside that directory are skipped
-# ("Skipping symlink that escapes skill directory boundary"). Install a
-# real copy instead; re-run this script to refresh it after updates.
-install_amplifier_copy() {
-  local target_dir="$HOME/.amplifier/skills" dest
+# Amplifier scans both ~/.agents/skills and ~/.amplifier/skills. Each scan
+# rejects symlinks whose targets lie outside its boundary, so both locations
+# need a real copy. Re-run the installer after updating the checkout.
+install_copy() {
+  local target_dir="$1" label="$2" dest
   dest="$target_dir/$NAME"
   if [ "$DRY" = 1 ]; then
-    echo "would copy: $SKILL_DIR -> $dest   (Amplifier user skills)"
+    echo "would copy: $SKILL_DIR -> $dest   ($label)"
     return
   fi
   mkdir -p "$target_dir"
@@ -71,16 +66,19 @@ install_amplifier_copy() {
   if command -v rsync >/dev/null 2>&1; then
     rsync -a --delete \
       --exclude '.git' --exclude '__pycache__' --exclude '.DS_Store' \
+      --exclude '.ruff_cache' --exclude '.pytest_cache' --exclude '.venv' \
       "$SKILL_DIR/" "$dest/"
   else
     rm -rf "$dest"
     mkdir -p "$dest"
     (cd "$SKILL_DIR" && tar cf - --exclude .git --exclude __pycache__ \
-      --exclude .DS_Store .) | (cd "$dest" && tar xf -)
+      --exclude .DS_Store --exclude .ruff_cache --exclude .pytest_cache \
+      --exclude .venv .) | (cd "$dest" && tar xf -)
   fi
-  echo "copied: $dest <- $SKILL_DIR   (Amplifier user skills)"
+  echo "copied: $dest <- $SKILL_DIR   ($label)"
 }
-install_amplifier_copy
+install_copy "$HOME/.agents/skills" "shared agent skills"
+install_copy "$HOME/.amplifier/skills" "Amplifier user skills"
 
 # Codex: optional legacy path. Do not create both links by default because
 # duplicate skill names can appear separately in Codex selectors.

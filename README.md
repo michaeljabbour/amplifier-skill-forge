@@ -76,11 +76,15 @@ cd amplifier-skill-forge
 The idempotent installer registers the checkout into:
 
 - `~/.claude/skills/amplifier-skill-forge` (symlink) for Claude Code and OpenCode;
-- `~/.agents/skills/amplifier-skill-forge` (symlink) for current Codex builds;
-- `~/.amplifier/skills/amplifier-skill-forge` (real copy) for Amplifier —
-  Amplifier's skill discovery skips symlinks that resolve outside its skills
-  directory, so the installer copies instead of linking. Re-run
-  `./scripts/install.sh` after updating the checkout to refresh the copy.
+- `~/.agents/skills/amplifier-skill-forge` (real copy) for shared discovery;
+- `~/.amplifier/skills/amplifier-skill-forge` (real copy) for Amplifier.
+
+Amplifier scans both `.agents/skills` and `.amplifier/skills` and rejects
+symlinks that resolve outside the scanned directory. The installer migrates
+existing links at these two locations to real copies without changing their
+former targets. Re-run `./scripts/install.sh` after updating the checkout to
+refresh both copies. Repository metadata, Python bytecode, tool caches, and
+the local virtual environment are excluded from the copies.
 
 Use `./scripts/install.sh --legacy-codex` only when an older Codex build still
 requires `$CODEX_HOME/skills`. The normal install removes an exact duplicate
